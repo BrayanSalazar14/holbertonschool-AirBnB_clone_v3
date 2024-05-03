@@ -3,11 +3,12 @@
 New view for State objects that handles all default RESTFul API actions
 """
 
-
+from flask import request
 from flask import jsonify
 from api.v1.views import app_views
 from models import storage
 from models.state import State
+from werkzeug.exceptions import BadRequest, UnsupportedMediaType
 
 
 @app_views.route('/states', methods=['GET'])
@@ -30,4 +31,21 @@ def del_obj(state_id):
     if instance is None:
         return jsonify({"error": "Not found"}), 404
     storage.delete(instance)
+    storage.save()
     return jsonify({}), 200
+
+
+@app_views.route('/states', methods=['POST'])
+def process_json():
+    json_data = request.get_json()
+
+    if json_data is None:
+        return jsonify({"error": "Not found"}), 400
+
+    if "name" not in json_data:
+        return jsonify({"error": "Not a JSON"}), 400
+
+    new_instance = State(**json_data)
+    storage.new(new_instance)
+    storage.save()
+    return jsonify(new_instance.to_dict()), 201
