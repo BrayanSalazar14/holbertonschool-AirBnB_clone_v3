@@ -1,4 +1,9 @@
 #!/usr/bin/python3
+"""
+Module that starts an API
+"""
+
+
 from flask import Flask
 from models import storage
 from api.v1.views import app_views
