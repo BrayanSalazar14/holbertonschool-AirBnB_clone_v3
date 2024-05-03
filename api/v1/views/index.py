@@ -1,4 +1,9 @@
 #!/usr/bin/python3
+"""
+Module that return the status as a Json file
+"""
+
+
 from api.v1.views import app_views
 from flask import jsonify
 
