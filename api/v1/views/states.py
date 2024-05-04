@@ -31,7 +31,7 @@ def del_obj(state_id):
         return jsonify({"error": "Not found"}), 404
     storage.delete(instance)
     storage.save()
-    return jsonify({}), 200
+    return {}, 200
 
 
 @app_views.route('/states', methods=['POST'])
@@ -61,7 +61,6 @@ def update_obj(state_id):
     if json_data is None:
         return jsonify({"error": "Not a JSON"}), 400
 
-    
     for key, value in json_data.items():
         setattr(instance, key, value)
     storage.save()
