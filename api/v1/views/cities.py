@@ -33,35 +33,47 @@ def get_cityId(state_id):
 
 
 @ app_views.route('/cities/<city_id>', methods=['GET'])
-@ app_views.route('/cities/<city_id>', methods=['DELETE'])
-def del_city(state_id):
-    instance = storage.get(State, state_id)
+def getCity(city_id):
+    instance = storage.get(City, city_id)
+
     if instance is None:
         return jsonify({"error": "Not found"}), 404
+
+    return jsonify(instance.to_dict())
+
+
+@app_views.route('/cities/<city_id>', methods=['DELETE'])
+def del_city(city_id):
+    instance = storage.get(City, city_id)
+
+    if instance is None:
+        return jsonify({"error": "Not found"}), 404
+
     storage.delete(instance)
     storage.save()
     return jsonify({}), 200
 
 
 @ app_views.route('/states/<state_id>/cities', methods=['POST'])
-def create_city():
+def create_city(state_id):
     json_data = request.get_json()
 
     if json_data is None:
         return jsonify({"error": "Not found"}), 400
 
     if "name" not in json_data:
-        return jsonify({"error": "Not a JSON"}), 400
-
-    new_instance = State(**json_data)
+        return jsonify({"error": "Missing name"}), 400
+    
+    json_data.update({'state_id':state_id})
+    new_instance = City(**json_data)
     storage.new(new_instance)
     storage.save()
     return jsonify(new_instance.to_dict()), 201
 
 
 @ app_views.route('/cities/<city_id>', methods=['PUT'])
-def update_city(state_id):
-    instance = storage.get(State, state_id)
+def update_city(city_id):
+    instance = storage.get(City, city_id)
     json_data = request.get_json()
 
     if instance is None:
