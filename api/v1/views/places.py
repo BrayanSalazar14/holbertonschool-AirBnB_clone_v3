@@ -55,26 +55,27 @@ def del_place(place_id):
 
 @app_views.route('/cities/<city_id>/places', methods=['POST'])
 def create_place(city_id):
-    city = storage.get(City, city_id)
     json_data = request.get_json()
-    user = storage.get(User, json_data['user_id'])
-
-    if city is None:
-        return jsonify({"error": "Not found"}), 404
-
-    if user is None:
-        return jsonify({"error": "Not found"}), 404
+    city = storage.get(City, city_id)
 
     if json_data is None:
         return jsonify({"error": "Not found"}), 400
 
+    if city is None:
+        return jsonify({"error": "Not found"}), 404
+
     if "user_id" not in json_data:
         return jsonify({"error": "Missing user_id"}), 400
+
+    user = storage.get(User, json_data['user_id'])
+
+    if user is None:
+        return jsonify({"error": "Not found"}), 404
 
     if "name" not in json_data:
         return jsonify({"error": "Missing name"}), 400
 
-    json_data.update({"city_id": city_id})
+    json_data.update({"city_id": city.id})
     new_instance = Place(**json_data)
     storage.new(new_instance)
     storage.save()

@@ -31,69 +31,70 @@ def get_review(place_id):
     return jsonify(reviews)
 
 
-# @app_views.route('/places/<place_id>', methods=['GET'])
-# def get_placeId(place_id):
-#     instance = storage.get(Place, place_id)
+@app_views.route('/reviews/<review_id>', methods=['GET'])
+def get_reviewId(review_id):
+    instance = storage.get(Review, review_id)
 
-#     if instance is None:
-#         return jsonify({"error": "Not found"}), 404
+    if instance is None:
+        return jsonify({"error": "Not found"}), 404
 
-#     return jsonify(instance.to_dict())
-
-
-# @app_views.route('/places/<place_id>', methods=['DELETE'])
-# def del_place(place_id):
-#     instance = storage.get(Place, place_id)
-
-#     if instance is None:
-#         return jsonify({"error": "Not found"}), 404
-
-#     storage.delete(instance)
-#     storage.save()
-#     return jsonify({}), 200
+    return jsonify(instance.to_dict())
 
 
-# @app_views.route('/cities/<city_id>/places', methods=['POST'])
-# def create_place(city_id):
-#     city = storage.get(City, city_id)
-#     json_data = request.get_json()
-#     user = storage.get(User, json_data['user_id'])
+@app_views.route('/reviews/<review_id>', methods=['DELETE'])
+def del_review(review_id):
+    instance = storage.get(Review, review_id)
 
-#     if city is None:
-#         return jsonify({"error": "Not found"}), 404
+    if instance is None:
+        return jsonify({"error": "Not found"}), 404
 
-#     if user is None:
-#         return jsonify({"error": "Not found"}), 404
-
-#     if json_data is None:
-#         return jsonify({"error": "Not found"}), 400
-
-#     if "user_id" not in json_data:
-#         return jsonify({"error": "Missing user_id"}), 400
-
-#     if "name" not in json_data:
-#         return jsonify({"error": "Missing name"}), 400
-
-#     json_data.update({"city_id": city_id})
-#     new_instance = Place(**json_data)
-#     storage.new(new_instance)
-#     storage.save()
-#     return jsonify(new_instance.to_dict()), 201
+    storage.delete(instance)
+    storage.save()
+    return jsonify({}), 200
 
 
-# @app_views.route('/places/<place_id>', methods=['PUT'])
-# def update_place(place_id):
-#     instance = storage.get(Place, place_id)
-#     json_data = request.get_json()
+@app_views.route('/places/<place_id>/reviews', methods=['POST'])
+def create_review(place_id):
+    json_data = request.get_json()
+    place = storage.get(Place, place_id)
 
-#     if instance is None:
-#         return jsonify({"error": "Not found"}), 404
+    if json_data is None:
+        return jsonify({"error": "Not found"}), 400
 
-#     if json_data is None:
-#         return jsonify({"error": "Not a JSON"}), 400
+    if place is None:
+        return jsonify({"error": "Not found"}), 404
 
-#     for key, value in json_data.items():
-#         setattr(instance, key, value)
-#     storage.save()
+    if "user_id" not in json_data:
+        return jsonify({"error": "Missing user_id"}), 400
 
-#     return jsonify(instance.to_dict()), 200
+    user = storage.get(User, json_data['user_id'])
+
+    if user is None:
+        return jsonify({"error": "Not found"}), 404
+
+    if "text" not in json_data:
+        return jsonify({"error": " Missing text"}), 400
+
+    json_data.update({"place_id": place.id})
+    new_instance = Review(**json_data)
+    storage.new(new_instance)
+    storage.save()
+    return jsonify(new_instance.to_dict()), 201
+
+
+@app_views.route('/reviews/<review_id>', methods=['PUT'])
+def update_review(review_id):
+    instance = storage.get(Review, review_id)
+    json_data = request.get_json()
+
+    if instance is None:
+        return jsonify({"error": "Not found"}), 404
+
+    if json_data is None:
+        return jsonify({"error": "Not a JSON"}), 400
+
+    for key, value in json_data.items():
+        setattr(instance, key, value)
+    storage.save()
+
+    return jsonify(instance.to_dict()), 200
