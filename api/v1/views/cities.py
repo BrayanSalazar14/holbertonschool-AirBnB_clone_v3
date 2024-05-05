@@ -12,13 +12,13 @@ from models.city import City
 
 
 @app_views.route('/cities', methods=['GET'])
-def get_city():
+def get_all_city():
     city = [city.to_dict() for city in storage.all(City).values()]
     return jsonify(city)
 
 
 @app_views.route('/states/<state_id>/cities', methods=['GET'])
-def get_cityId(state_id):
+def get_statesId(state_id):
     instance_state = storage.get(State, state_id)
     instance_cities = storage.all(City)
 
@@ -28,12 +28,12 @@ def get_cityId(state_id):
     list_combined = [
         city.to_dict() for city in instance_cities.values()
         if city.state_id == instance_state.id]
-
+    
     return jsonify(list_combined)
 
 
 @ app_views.route('/cities/<city_id>', methods=['GET'])
-def getCity(city_id):
+def get_citiesId(city_id):
     instance = storage.get(City, city_id)
 
     if instance is None:
@@ -57,14 +57,18 @@ def del_city(city_id):
 @ app_views.route('/states/<state_id>/cities', methods=['POST'])
 def create_city(state_id):
     json_data = request.get_json()
+    state = storage.get(State, state_id)
 
     if json_data is None:
+        return jsonify({"error": "Not found"}), 400
+    
+    if state is None:
         return jsonify({"error": "Not found"}), 400
 
     if "name" not in json_data:
         return jsonify({"error": "Missing name"}), 400
     
-    json_data.update({'state_id':state_id})
+    json_data.update({'state_id':state.id})
     new_instance = City(**json_data)
     storage.new(new_instance)
     storage.save()
