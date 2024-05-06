@@ -1,5 +1,7 @@
 # AirBnB Clone RESTFul API 
 
+<a href="https://i.imgur.com/HxhW6gU.png"><img src="https://i.imgur.com/HxhW6gU.png" title="source: imgur.com" /></a>
+
 This repository contains the code for an API designed to emulate some functionalities of the AirBnB platform. It includes endpoints for managing states, cities, users, amenities, places, and more.
 
 ## Table of Contents
